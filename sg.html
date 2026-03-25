@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kodda</title>
+    <link rel="icon" href="images/logo.png">
+</head>
+<body>
+<a href="index.html" id="home-btn" title="Go Home">
+  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+  </svg>
+</a>
+
+<div id="game-wrapper">
+  <iframe id="game-frame" src="games/sausage-flipping-main/index.html" frameborder="0" width="100%" height="700px" style="display: block; border-radius: 16px; overflow: hidden;"></iframe>
+  <div id="game-info-bar">
+    <span id="game-title">Sausage Flipping</span>
+    <div id="game-actions">
+      <button class="react-btn" id="like-btn" onclick="handleLike()">👍 <span id="like-count">0</span></button>
+      <button class="react-btn" id="dislike-btn" onclick="handleDislike()">👎 <span id="dislike-count">0</span></button>
+      <button id="fullscreen-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  #home-btn {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    background: rgba(0, 0, 0, 0.42);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(12px);
+    color: #fff;
+    text-decoration: none;
+    transition: transform 0.2s, background 0.2s;
+  }
+  #home-btn:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.14);
+  }
+  #home-btn svg {
+    filter: drop-shadow(0 0 6px rgba(235, 171, 52, 0.7));
+  }
+  #game-wrapper {
+    position: relative;
+    width: 60%;
+    margin: 20px auto;
+  }
+  #game-info-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding: 12px 18px;
+    background: rgba(0, 0, 0, 0.42);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 20px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(12px);
+  }
+  #game-title {
+    color: #fff;
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 12px rgba(235, 171, 52, 0.85);
+  }
+  #game-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .react-btn {
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .react-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  .react-btn:active {
+    transform: scale(0.93);
+  }
+  .react-btn.active-like {
+    background: rgba(0, 200, 100, 0.2);
+    border-color: rgba(0, 200, 100, 0.6);
+  }
+  .react-btn.active-dislike {
+    background: rgba(220, 50, 50, 0.2);
+    border-color: rgba(220, 50, 50, 0.6);
+  }
+  #fullscreen-btn {
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  #fullscreen-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  #game-wrapper.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    z-index: 9999;
+  }
+  #game-frame.fullscreen {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 0 !important;
+  }
+</style>
+
+<script>
+  function toggleFullscreen() {
+    const frame = document.getElementById('game-frame');
+    const wrapper = document.getElementById('game-wrapper');
+    const btn = document.getElementById('fullscreen-btn');
+    const isFullscreen = frame.classList.toggle('fullscreen');
+    wrapper.classList.toggle('fullscreen');
+    btn.innerHTML = isFullscreen ? '✕' : '⛶';
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const frame = document.getElementById('game-frame');
+      const wrapper = document.getElementById('game-wrapper');
+      const btn = document.getElementById('fullscreen-btn');
+      if (frame.classList.contains('fullscreen')) {
+        frame.classList.remove('fullscreen');
+        wrapper.classList.remove('fullscreen');
+        btn.innerHTML = '⛶';
+      }
+    }
+  });
+</script>
+<link rel="stylesheet" href="main.css">
+
+<style>
+  #game-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    display: block;
+    background-image: 
+      repeating-linear-gradient(0deg, rgba(0, 255, 255, 0.02) 0px, rgba(0, 255, 255, 0.02) 1px, transparent 1px, transparent 40px),
+      repeating-linear-gradient(90deg, rgba(255, 0, 255, 0.02) 0px, rgba(255, 0, 255, 0.02) 1px, transparent 1px, transparent 40px);
+    background-size: 40px 40px;
+    pointer-events: none; 
+  }
+</style>
+<canvas id="game-bg"></canvas>
+<script>
+  (function() {
+    const canvas = document.getElementById('game-bg');
+    const ctx = canvas.getContext('2d');
+    let mouseX = -1000, mouseY = -1000;
+    const mouseRadius = parseInt(localStorage.getItem('mouseRadius')) || 150;       
+    const particleCount = parseInt(localStorage.getItem('particleCount')) || 200;
+    const particleSpeed = parseFloat(localStorage.getItem('particleSpeed')) || 0.4;
+    const theme = localStorage.getItem('theme') || 'default';
+    const themes = {
+      default: [
+        { rgb: '235, 171, 52', name: 'yellow' },
+        { rgb: '255, 255, 255', name: 'white' }
+      ],
+      blue: [
+        { rgb: '0, 123, 255', name: 'blue' },
+        { rgb: '255, 255, 255', name: 'white' }
+      ],
+      red: [
+        { rgb: '255, 0, 0', name: 'red' },
+        { rgb: '255, 255, 255', name: 'white' }
+      ],
+      green: [
+        { rgb: '0, 255, 0', name: 'green' },
+        { rgb: '255, 255, 255', name: 'white' }
+      ],
+      purple: [
+        { rgb: '128, 0, 128', name: 'purple' },
+        { rgb: '255, 255, 255', name: 'white' }
+      ]
+    };
+    const colors = themes[theme];
+
+    const themeBackgrounds = {
+      default: '#0a0c0f',
+      blue: '#0a0c0f',
+      red: '#0a0c0f',
+      green: '#0a0c0f',
+      purple: '#0a0c0f'
+    };
+    canvas.style.backgroundColor = themeBackgrounds[theme];
+    let particles = [];
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
+    }
+    function initParticles() {
+      particles = [];
+      for (let i = 0; i < particleCount; i++) {
+        const colorObj = colors[Math.floor(Math.random() * colors.length)];
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * particleSpeed,
+          vy: (Math.random() - 0.5) * particleSpeed,
+          size: Math.random() * 4 + 2,
+          color: colorObj,
+          baseOpacity: Math.random() * 0.5 + 0.4,
+        });
+      }
+    }
+    function updateParticles() {
+      for (let p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+      }
+    }
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let p of particles) {
+        const dx = p.x - mouseX;
+        const dy = p.y - mouseY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        let opacity = p.baseOpacity;
+        let size = p.size;
+        if (dist < mouseRadius) {
+          const intensity = 1 - (dist / mouseRadius);
+          opacity = Math.min(p.baseOpacity + intensity * 0.6, 1.0);
+          size = p.size + intensity * 8;
+          ctx.shadowColor = p.color.name;
+          ctx.shadowBlur = 25 * intensity;
+        } else {
+          ctx.shadowBlur = 0;
+        }
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${p.color.rgb}, ${opacity})`;
+        ctx.fill();
+      }
+      
+    }
+    function animate() {
+      updateParticles();
+      drawParticles();
+      requestAnimationFrame(animate);
+    }
+    function onMouseMove(e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    }
+    function onMouseLeave() {
+      mouseX = -1000;
+      mouseY = -1000;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseleave', onMouseLeave);
+    resizeCanvas();
+    animate();
+  })();
+</script>
+
+<script src="script.js"></script>
+<script>
+  // Like / Dislike
+  let likes = parseInt(localStorage.getItem('mc_likes') || '0');
+  let dislikes = parseInt(localStorage.getItem('mc_dislikes') || '0');
+  let userVote = localStorage.getItem('mc_vote') || null;
+
+  function updateVoteUI() {
+    document.getElementById('like-count').textContent = likes;
+    document.getElementById('dislike-count').textContent = dislikes;
+    document.getElementById('like-btn').classList.toggle('active-like', userVote === 'like');
+    document.getElementById('dislike-btn').classList.toggle('active-dislike', userVote === 'dislike');
+  }
+
+  function handleLike() {
+    if (userVote === 'like') { likes--; userVote = null; }
+    else { if (userVote === 'dislike') dislikes--; likes++; userVote = 'like'; }
+    localStorage.setItem('mc_likes', likes);
+    localStorage.setItem('mc_dislikes', dislikes);
+    localStorage.setItem('mc_vote', userVote || '');
+    updateVoteUI();
+  }
+
+  function handleDislike() {
+    if (userVote === 'dislike') { dislikes--; userVote = null; }
+    else { if (userVote === 'like') likes--; dislikes++; userVote = 'dislike'; }
+    localStorage.setItem('mc_likes', likes);
+    localStorage.setItem('mc_dislikes', dislikes);
+    localStorage.setItem('mc_vote', userVote || '');
+    updateVoteUI();
+  }
+
+  updateVoteUI();
+
+  // Fullscreen
+  const expandIcon = '⛶';
+  const collapseIcon = '✕';
+
+  function toggleFullscreen() {
+    const frame = document.getElementById('game-frame');
+    const wrapper = document.getElementById('game-wrapper');
+    const btn = document.getElementById('fullscreen-btn');
+    const isFullscreen = frame.classList.toggle('fullscreen');
+    wrapper.classList.toggle('fullscreen');
+    btn.innerHTML = isFullscreen ? collapseIcon : expandIcon;
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const frame = document.getElementById('game-frame');
+      const wrapper = document.getElementById('game-wrapper');
+      const btn = document.getElementById('fullscreen-btn');
+      if (frame.classList.contains('fullscreen')) {
+        frame.classList.remove('fullscreen');
+        wrapper.classList.remove('fullscreen');
+        btn.innerHTML = expandIcon;
+      }
+    }
+  });
+</script>
+</body>
+</html>

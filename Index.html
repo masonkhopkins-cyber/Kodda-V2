@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kodda</title>
+    <link rel="icon" href="images/logo.png">
+    <head>
+  <meta property="og:title" content="IXL Learning" />
+  <meta property="og:description" content="IXL is the world's most popular subscription-based learning site for K–12. Used by over 17 million students, IXL provides personalized learning in more than 17,000 topics, covering math, language arts, science, social studies, and Spanish. Interactive questions, awards, and certificates keep kids motivated as they master skills." />
+  <meta property="og:image" content="images/square_og_ixl.png" />
+  <meta property="og:url" content="https://www.ixl.com/" />
+  <meta property="og:type" content="website" />
+</head>
+<body>
+  <div id="top-left-button">
+    <a class="icon-button" href="Settings.html">
+      <span>⚙️</span>
+    </a>
+  </div>
+  <p id="title" style="text-align: center; margin-top: 50px; color: #fff; font-family: 'Black Ops One', sans-serif; font-size: 5rem; font-weight: 800; margin-right: 1%;">Welcome to Kodda!</p>
+
+<div id="clock" style="text-align: center; margin: 20px auto; color: #fff; font-family: 'Black Ops One', sans-serif; font-size: 2rem;"></div>
+
+<div id="quote-container" style="text-align: center; margin: 8px auto 0; max-width: 600px; color: #fff; font-family: 'Black Ops One', cursive;">
+  <p id="quote-text" style="font-size: 1.4rem; margin: 0 0 0.5rem; letter-spacing: 0.04em;">"Loading quote..."</p>
+  <p id="quote-author" style="font-size: 1.1rem; margin: 0; opacity: 0.8; letter-spacing: 0.05em;">—</p>
+</div>
+
+<div id="bottom-bar">
+  <a class="icon-button discord-button" href="https://discord.gg/G9v83ZEgGQ" target="_blank">
+    <img src="images/Discord image.png" alt="Discord">
+  </a>
+  <a class="icon-button" href="Games.page.html">
+    <img src="images/Games Button.png" alt="Games" style="width: 60px; height: 60px;">
+  </a>
+  <a class="icon-button" href="Credits.page.html">
+    <img src="images/Credits.png" alt="Credits" style="width: 60px; height: 60px;">
+  </a>
+</div>
+
+<canvas id="game-bg"></canvas>
+<style>
+  #game-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    display: block;
+    background-image: 
+      repeating-linear-gradient(0deg, rgba(0, 255, 255, 0.02) 0px, rgba(0, 255, 255, 0.02) 1px, transparent 1px, transparent 40px),
+      repeating-linear-gradient(90deg, rgba(255, 0, 255, 0.02) 0px, rgba(255, 0, 255, 0.02) 1px, transparent 1px, transparent 40px);
+    background-size: 40px 40px;
+    pointer-events: none; 
+  }
+
+  :root {
+    --glow: rgba(235, 171, 52, 0.85);
+  }
+
+  #quote-text,
+  #quote-author {
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    text-shadow: 0 0 20px var(--glow);
+  }
+
+  .icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-family: 'Black Ops One', sans-serif;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+  }
+
+  .icon-button:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 22px 46px rgba(0, 0, 0, 0.45);
+  }
+
+  .icon-button:active {
+    transform: translateY(0);
+  }
+
+  .icon-button img {
+    width: 60px;
+    height: 60px;
+    border-radius: 22px;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+  }
+
+  .discord-button img {
+    filter: drop-shadow(0 0 18px rgba(88, 101, 242, 0.75));
+  }
+
+  .icon-button span {
+    font-size: 0.92rem;
+    letter-spacing: 0.06em;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.75);
+    padding: 0 0.25rem;
+  }
+
+  #bottom-bar {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 18px;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.42);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 40px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(12px);
+    z-index: 50;
+  }
+
+  #top-left-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 50;
+  }
+
+  #top-left-button .icon-button {
+    width: 60px;
+    height: 60px;
+  }
+
+  #top-left-button .icon-button span {
+    font-size: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    #bottom-bar {
+      width: calc(100% - 32px);
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 10px;
+      gap: 12px;
+    }
+
+    .icon-button {
+      width: 82px;
+      height: 82px;
+    }
+
+    .icon-button img {
+      width: 52px;
+      height: 52px;
+    }
+  }
+</style>
+<script>
+  (function() {
+    const canvas = document.getElementById('game-bg');
+    const ctx = canvas.getContext('2d');
+    let mouseX = -1000, mouseY = -1000;
+    const mouseRadius = parseInt(localStorage.getItem('mouseRadius')) || 150;       
+    const particleCount = parseInt(localStorage.getItem('particleCount')) || 200;
+    const particleSpeed = parseFloat(localStorage.getItem('particleSpeed')) || 0.4;
+    const theme = localStorage.getItem('theme') || 'default';
+    const themes = {
+      default: [
+        { rgb: '235, 171, 52', name: 'yellow' },
+        { rgb: '255, 255, 255', name: 'white' }
+      ],
+      blue: [
+        { rgb: '0, 123, 255', name: 'blue' },
+        { rgb: '255, 255, 255', name: 'white' }
+      ],
+      red: [
+        { rgb: '255, 0, 0', name: 'red' },
+        { rgb: '255, 255, 255', name: 'white' }
+      ],
+      green: [
+        { rgb: '0, 255, 0', name: 'green' },
+        { rgb: '255, 255, 255', name: 'white' }
+      ],
+      purple: [
+        { rgb: '128, 0, 128', name: 'purple' },
+        { rgb: '255, 255, 255', name: 'white' }
+      ]
+    };
+    const colors = themes[theme];
+
+    const themeGlows = {
+      default: 'rgba(235, 171, 52, 0.85)',
+      blue: 'rgba(0, 123, 255, 0.85)',
+      red: 'rgba(255, 0, 0, 0.85)',
+      green: 'rgba(0, 255, 0, 0.85)',
+      purple: 'rgba(128, 0, 128, 0.85)'
+    };
+    const glowColor = themeGlows[theme];
+
+    const themeBackgrounds = {
+      default: '#0a0c0f',
+      blue: '#0a0c0f',
+      red: '#0a0c0f',
+      green: '#0a0c0f',
+      purple: '#0a0c0f'
+    };
+    canvas.style.backgroundColor = themeBackgrounds[theme];
+
+    document.documentElement.style.setProperty('--glow', glowColor);
+    document.getElementById('title').style.textShadow       = `0 0 20px ${glowColor}`;
+    document.getElementById('clock').style.textShadow       = `0 0 20px ${glowColor}`;
+    document.getElementById('quote-text').style.textShadow  = `0 0 20px ${glowColor}`;
+    document.getElementById('quote-author').style.textShadow = `0 0 20px ${glowColor}`;
+    let particles = [];
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
+    }
+    function initParticles() {
+      particles = [];
+      for (let i = 0; i < particleCount; i++) {
+        const colorObj = colors[Math.floor(Math.random() * colors.length)];
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * particleSpeed,
+          vy: (Math.random() - 0.5) * particleSpeed,
+          size: Math.random() * 4 + 2,
+          color: colorObj,
+          baseOpacity: Math.random() * 0.5 + 0.4,
+        });
+      }
+    }
+    function updateParticles() {
+      for (let p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+      }
+    }
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let p of particles) {
+        const dx = p.x - mouseX;
+        const dy = p.y - mouseY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        let opacity = p.baseOpacity;
+        let size = p.size;
+        if (dist < mouseRadius) {
+          const intensity = 1 - (dist / mouseRadius);
+          opacity = Math.min(p.baseOpacity + intensity * 0.6, 1.0);
+          size = p.size + intensity * 8;
+          ctx.shadowColor = p.color.name;
+          ctx.shadowBlur = 25 * intensity;
+        } else {
+          ctx.shadowBlur = 0;
+        }
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${p.color.rgb}, ${opacity})`;
+        ctx.fill();
+      }
+      
+    }
+    function animate() {
+      updateParticles();
+      drawParticles();
+      requestAnimationFrame(animate);
+    }
+
+    const quotes = [
+      { text: "Code is humor When you have to explain it because people are dumb.", author: "Me Myself And I" },
+      { text: "This stuff hurts my brain.", author: "Me Myself And I" },
+      { text: "I dont know how to fix any of this.", author: "Me Myself And I" },
+      { text: "Experience is name.", author: "Me Myself And I" },
+      { text: "Make it work mate or your eaten out the dumpster", author: "Me Myself And I" },
+      { text: "Any fool can write code... That fool is me!.", author: "Me Myself And I" },
+      { text: "Programs must be written for people.", author: "Me Myself And I" },
+      { text: "Debugging... More like drug bugging.", author: "Me Myself And I" },
+      { text: "This is the bets error message... 404 error.", author: "Me Myself And I" },
+      { text: "The only way to go fast.", author: "Me Myself And I" },
+      { text: "Perfection is achieved.", author: "Me Myself And I" },
+      { text: "Code never lies... Yeah it does", author: "Me Myself And I" },
+      { text: "Bad code.", author: "Me Myself And I" },
+      { text: "reliability.", author: "Me Myself And I" },
+      { text: "It’s that I’m so smart just I stay with problems longer.", author: "Me Myself And I" },
+      { text: "Testing leads to failure.", author: "Me Myself And I" },
+      { text: "I don’t care if it works.", author: "Me Myself And I" },
+      { text: "A language.", author: "Me Myself And I" },
+      { text: "Simplicity ultimate.", author: "Me Myself And I" },
+      { text: "Programs are meant to be read.", author: "Me Myself And I" },
+      { text: "Start sooner.", author: "Me Myself And I" },
+      { text: "Optimism is an occupational hazard.", author: "Me Myself And I" },
+      { text: "Any sufficiently advanced technology.", author: "Me Myself And I" },
+      { text: "Simplicity.", author: "Me Myself And I" }
+    ];
+
+    function updateClock() {
+      const now = new Date();
+      const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      const date = now.toLocaleDateString();
+      document.getElementById('clock').textContent = `${date} ${time}`;
+    }
+
+    const quoteTextEl = document.getElementById('quote-text');
+    const quoteAuthorEl = document.getElementById('quote-author');
+
+    function setQuote(quote) {
+      
+      quoteTextEl.style.opacity = '0';
+      quoteAuthorEl.style.opacity = '0';
+
+      requestAnimationFrame(() => {
+        quoteTextEl.textContent = `"${quote.text}"`;
+        quoteAuthorEl.textContent = `— ${quote.author}`;
+        quoteTextEl.style.opacity = '1';
+        quoteAuthorEl.style.opacity = '1';
+
+        if (quote.text === "I dont know how to fix any of this.") {
+          spawnFlyingCats();
+        }
+      });
+    }
+
+    function spawnFlyingCats() {
+      const catCount = 1;
+      for (let i = 0; i < catCount; i++) {
+        const cat = document.createElement('img');
+        cat.src = 'images/TACO CAT.png';
+        cat.alt = 'Flying Cat';
+        cat.style.position = 'fixed';
+        cat.style.left = '-700px';
+        cat.style.top = (window.innerHeight / 2) - 300 + 'px';
+        cat.style.width = '600px';
+        cat.style.height = 'auto';
+        cat.style.zIndex = '1000';
+        cat.style.pointerEvents = 'none';
+        cat.style.transition = 'left 3s linear';
+        document.body.appendChild(cat);
+        setTimeout(() => {
+          cat.style.left = window.innerWidth + 'px';
+        }, 50);
+        setTimeout(() => {
+          cat.remove();
+        }, 3200);
+      }
+    }
+
+    function initQuotes() {
+      setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+      setInterval(() => {
+        setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+      }, 8000);
+    }
+
+    function onMouseMove(e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    }
+    function onMouseLeave() {
+      mouseX = -1000;
+      mouseY = -1000;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseleave', onMouseLeave);
+    resizeCanvas();
+    animate();
+    initQuotes();
+    updateClock();
+    setInterval(updateClock, 1000);
+  })();
+</script>
+</body>
+</html>
